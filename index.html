@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Students</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Student Data</h1>
+    <table id="studentData">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>City</th>
+          <th>Age</th>
+          <th>Gender</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <script src="index.js"></script>
+    <script>
+      fetch("http://localhost:3000/students")
+        .then((response) => response.json())
+        .then((data) => {
+          let tableBody = document.querySelector("#studentData tbody");
+
+          data.forEach((student) => {
+            let row = `<tr>
+                        <td>${student.student_id}</td>
+                        <td>${student.fullname}</td>
+                        <td>${student.city}</td>
+                        <td>${student.age}</td>
+                        <td>${student.sex}</td>
+                    </tr>`;
+            tableBody.innerHTML += row;
+          });
+        })
+        .catch((error) => console.error("Error Fetching data: ", error));
+    </script>
+  </body>
+</html>
