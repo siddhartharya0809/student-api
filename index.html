@@ -8,6 +8,9 @@
   </head>
   <body>
     <h1>Student Data</h1>
+
+    <input type="file" id="csvfileInput" accept=".csv" />
+    <button onclick="uploadCSV()">Upload CSV</button>
     <table id="studentData">
       <thead>
         <tr>
@@ -22,23 +25,51 @@
     </table>
     <script src="index.js"></script>
     <script>
-      fetch("http://localhost:3000/students")
-        .then((response) => response.json())
-        .then((data) => {
-          let tableBody = document.querySelector("#studentData tbody");
+      function uploadCSV() {
+        let fileInput = document.getElementById("csvFileInput");
+        let file = fileInput.files[0];
 
-          data.forEach((student) => {
-            let row = `<tr>
-                        <td>${student.student_id}</td>
-                        <td>${student.fullname}</td>
-                        <td>${student.city}</td>
-                        <td>${student.age}</td>
-                        <td>${student.sex}</td>
-                    </tr>`;
-            tableBody.innerHTML += row;
-          });
+        if (!file) {
+          alert("Please select a file");
+          return;
+        }
+
+        let formData = new FormData();
+        formData.append("csvFile", file);
+
+        fetch("https://localhost:3000/upload-csv", {
+          method: "POST",
+          body: formData,
         })
-        .catch((error) => console.error("Error Fetching data: ", error));
+          .then((response) => response.json())
+          .then((data) => {
+            alert(data.message);
+            fetchStudents();
+          })
+          .catch((error) => console.error("Error Uploading CSV: ", error));
+      }
+
+      function fetchStudents() {
+        fetch("http://localhost:3000/students")
+          .then((response) => response.json())
+          .then((data) => {
+            let tableBody = document.querySelector("#studentData tbody");
+
+            data.forEach((student) => {
+              let row = `<tr>
+                    <td>${student.student_id}</td>
+                    <td>${student.fullname}</td>
+                    <td>${student.city}</td>
+                    <td>${student.age}</td>
+                    <td>${student.sex}</td>
+                    </tr>`;
+              tableBody.innerHTML += row;
+            });
+          })
+          .catch((error) => console.error("Error Fetching data: ", error));
+      }
+
+      window.onload = fetchStudents;
     </script>
   </body>
 </html>
